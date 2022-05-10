@@ -1,0 +1,3 @@
+﻿  StorageCollection.cpp
+C:\Storage\Storage\StorageCollection.cpp(29,39): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Storage.vcxproj -> C:\Storage\x64\Debug\Storage.exe
