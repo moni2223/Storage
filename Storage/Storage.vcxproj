@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Date.h" />
+    <ClInclude Include="helperFunctions.hpp" />
     <ClInclude Include="Product.hpp" />
     <ClInclude Include="StorageCollection.h" />
   </ItemGroup>

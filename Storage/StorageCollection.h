@@ -1,22 +1,37 @@
 #pragma once
 #include "Product.hpp"
 
+/*
+We have N section with 5 lines each. Lets think that every product has the same size. So every line can hold 100 things on it.
+	Example: Section 1 -> Line 2 -> We have 6 packs of sugar, so we have 4 more spaces to put products.
+*/
 
 class StorageCollection {
 
 	Product** products;
 	int count;
 	int current;
-	int lastSection;
-	int lastLine;
+	int currentSection;
+	int currentLine;
 	void resize();
 	void clear();
 	int firstFreeIndex();
+	void firstFreeSpace(const int quantity);
 
 public:
 	StorageCollection();
 
-	void addProduct(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description);
+	void checkAndAddProduct();
+	void addProduct(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description, bool add);
+	void showProducts();
+
+	int writeOnFile();
+	int readFromFile();
+	int removeFromFile(int line);
+
+
+	int* splitDate(string s,string del);
+	void clearProductsByDate(string s);
 
 	~StorageCollection();
 };

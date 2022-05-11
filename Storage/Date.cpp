@@ -21,3 +21,29 @@ Date& Date::operator=(const Date& other) {
 
     return *this;
 }
+
+bool Date::compare(const Date& other) {
+    if (year == other.year) {
+        if (month == other.month) {
+            if (day == other.day) return true;
+            else return false;
+        }
+        else return false;
+    } 
+    else return false;
+}
+
+bool Date::isExpiringSoon(const Date& other) {
+
+    if (year == other.year) {
+        if (month == other.month) {
+            if (day - other.day < 5) {
+                return true;
+            }
+            else if (month > other.month) return true;
+            else return false;
+        }
+        else return false;
+    }
+    else return false;
+}

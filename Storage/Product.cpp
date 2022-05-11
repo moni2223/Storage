@@ -39,8 +39,8 @@ Product::Product() : expiry_date(), import_date(), quantity(0) {
 
 }
 
-Product::Product(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description, const int id, const int section,const int line)
-	: expiry_date(expiry_date), import_date(import_date), quantity(quantity), section(section), line(line), id(id) {
+Product::Product(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description)
+	: quantity(quantity), expiry_date(expiry_date), import_date(import_date) {
 
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
@@ -50,6 +50,22 @@ Product::Product(const char* name, Date expiry_date, Date import_date, const cha
 
 	this->description = new char[strlen(description) + 1];
 	strcpy(this->description, description);
+
+}
+
+Product::Product(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description,const int id, const int section,const int line)
+	: expiry_date(expiry_date), import_date(import_date), quantity(quantity), section(section), line(line) {
+
+	this->name = new char[strlen(name) + 1];
+	strcpy(this->name, name);
+
+	this->manufacturer = new char[strlen(manufacturer) + 1];
+	strcpy(this->manufacturer, manufacturer);
+
+	this->description = new char[strlen(description) + 1];
+	strcpy(this->description, description);
+
+	set_id(id);
 }
 
 Product::Product(const Product& other) {
@@ -64,8 +80,45 @@ Product& Product::operator=(const Product& other) {
 	return *this;
 }
 
+int Product::get_quantity() const {
+	return quantity;
+}
+
+char* Product::get_name() const {
+	return name;
+}
+
+Date Product::get_expiry_date() const {
+	return expiry_date;
+}
+
+Date Product::get_import_date() const {
+	return import_date;
+}
+
+char* Product::get_description() const {
+	return description;
+}
+
+char* Product::get_manufacturer() const {
+	return manufacturer;
+}
+
+int Product::get_section() const {
+	return section;
+}
+
+int Product::get_line() const {
+	return line;
+}
+
+
 void Product::set_id(const int id) {
 	this->id = id;
+}
+
+void Product::set_quantity(const int quantity) {
+	this->quantity = quantity;
 }
 
 Product::~Product() {

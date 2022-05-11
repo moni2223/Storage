@@ -1,10 +1,36 @@
 #include "StorageCollection.h"
+#include "helperFunctions.hpp"
+
 int main()
 {
     StorageCollection s;
 
-    s.addProduct("nestho", { 1900,2,25 }, { 1900,3,15 }, "az", 5, "nsjndsndjsnds");
-    //s.addProduct("nestho2", { 1912,5,30 }, { 1915,7,13 }, "az2", 10, "nsdjnfjfnjf");
+    s.readFromFile();
+
+    welcomeScreen();
+
+    char input[1024];
+    string str;
+
+    while (cin >> input) {
+        switch (input[0]) {
+        case '1':
+            cin.ignore();
+            s.checkAndAddProduct();
+            break;
+        case '2':
+            s.showProducts(); break;
+        case '5':
+            cout << "-> Please enter date: ";
+            cin.ignore();
+            getline(cin, str);
+            s.clearProductsByDate(str);
+            break;
+
+        default:
+            cout << "-> Not valid function.Try again." << endl;
+        }
+    }
+  
     
-    std::cout << "Hello World!\n";
 }
