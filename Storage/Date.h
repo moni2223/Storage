@@ -27,8 +27,11 @@ public:
 
     bool isExpiringSoon(const Date& other);
 
+    bool isBetween(const Date& first, const Date& second);
+
     friend ostream& operator<<(ostream& os, const Date& dt) {
         os << dt.day << '/' << dt.month << '/' << dt.year;
         return os;
     }
+    
 };

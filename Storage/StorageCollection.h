@@ -24,14 +24,18 @@ public:
 	void checkAndAddProduct();
 	void addProduct(const char* name, Date expiry_date, Date import_date, const char* manufacturer, const int quantity, const char* description, bool add);
 	void showProducts();
+	void clearProductsByDate(string s);
+	void showActivity();
 
 	int writeOnFile();
 	int readFromFile();
 	int removeFromFile(int line);
+	int clearFile();
+	int writeActivityOnFile(int functionID);
 
 
+	bool checkValidDate(string s);
 	int* splitDate(string s,string del);
-	void clearProductsByDate(string s);
 
 	~StorageCollection();
 };

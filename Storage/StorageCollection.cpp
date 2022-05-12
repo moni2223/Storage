@@ -39,6 +39,28 @@ int* StorageCollection::splitDate(string s, string del) {
 	return dates;
 }
 
+int StorageCollection::writeActivityOnFile(int functionID) {
+	ofstream file("activity.txt", ios::app);
+	if (!file.is_open())
+	{
+		cout << "Error!" << endl;
+		return -1;
+	}
+
+	switch (functionID) {
+	case 1: file << products[current - 1]->get_import_date() << " --> Product with name: " << products[current - 1]->get_name()
+		<< " added on section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
+		break;
+	case 5: file << products[current - 1]->get_expiry_date() << " --> Product with name: " << products[current - 1]->get_name()
+		<< "removed from section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
+		break;
+	default: break;
+	}
+
+	if (!file.eof()) cout << "";
+	file.close();
+}
+
 int StorageCollection::writeOnFile() {
 
 	ofstream file("output.txt", ios::app);
@@ -49,14 +71,10 @@ int StorageCollection::writeOnFile() {
 		return -1;
 	}
 
-	file << "{ " << products[current - 1]->get_name() << " "
-		<< products[current - 1]->get_expiry_date() << " " << products[current - 1]->get_import_date() << " "
-		<< products[current - 1]->get_manufacturer() << " " << products[current - 1]->get_quantity() << " "
-		<< products[current - 1]->get_section() << " " << products[current - 1]->get_line() << " }";
-	file << "\n" << endl;
+	file << "{ " << products[current - 1]->get_name() << " " << products[current - 1]->get_expiry_date() << " " << products[current - 1]->get_import_date() << " " << products[current - 1]->get_manufacturer() << " " << products[current - 1]->get_quantity() << " " << products[current - 1]->get_section() << " " << products[current - 1]->get_line() << " }" << "\n";
 
-	if (!file.eof()) //check if the file has ended
-		cout << "" << endl;
+	if (!file.eof())
+		
 
 	file.close();
 }
@@ -75,6 +93,9 @@ int StorageCollection::readFromFile() {
 	{
 		string buff;
 		while (getline(file, buff)) {
+
+			if (buff.size() < 2) break;
+
 			buff.erase(0, 2); //removes first bracket and whitespace
 			buff.erase(buff.size() - 2); //removes whitespace and last bracket
 
@@ -134,7 +155,10 @@ int StorageCollection::removeFromFile(int line) {
 
 	if (original && temp) {
 		while (getline(temp, buff)) {
-			original << buff << "\n";
+			if (buff.size() > 1) {
+				original << buff << "\n";
+
+			}
 		}
 		remove("copy.txt");
 	}
@@ -143,6 +167,13 @@ int StorageCollection::removeFromFile(int line) {
 
 	return 0;
 
+}
+
+int StorageCollection::clearFile() {
+	ofstream ofs;
+	ofs.open("output.txt", std::ofstream::out | std::ofstream::trunc);
+	ofs.close();
+	return 1;
 }
 
 int StorageCollection::firstFreeIndex() {
@@ -169,6 +200,27 @@ void StorageCollection::firstFreeSpace(const int quantity) {
 		}
 		else currentLine += 1;
 	}
+}
+
+bool StorageCollection::checkValidDate(string s) {
+	for (int i = 0; i < s.size(); i++) {
+		if (isalpha(s[i])) {
+			cout << "Invalid date" << endl;
+			return false;
+		}
+	}
+	int occurrences = 0;
+	for (int i = 0; i < s.size(); i++)
+	{
+		if (s[i] != '/')
+			continue;
+		else ++occurrences;
+	}
+	if (occurrences != 2) {
+		cout << "Invalid date" << endl;
+		return false;
+	}
+	else return true;
 }
 
 StorageCollection::StorageCollection() {
@@ -229,6 +281,8 @@ void StorageCollection::checkAndAddProduct() {
 	int exp_date[3];
 	int imp_date[3];
 
+	if(!checkValidDate(words[1]) || !checkValidDate(words[2])) return;
+
 	for (int i = 0; i < 3; i++) exp_date[i] = splitDate(words[1], "/")[i];
 	for (int i = 0; i < 3; i++) imp_date[i] = splitDate(words[2], "/")[i];
 
@@ -271,6 +325,7 @@ void StorageCollection::addProduct(const char* name, Date expiry_date, Date impo
 			writeOnFile();
 		}
 	}
+	writeActivityOnFile(1);
 }
 
 void StorageCollection::showProducts() {
@@ -291,8 +346,71 @@ void StorageCollection::showProducts() {
 	}
 }
 
+void StorageCollection::showActivity() {
+	string firstDate;
+	string secondDate;
+
+	cin.ignore();
+	cout << "Please enter start date: ";
+	getline(cin, firstDate);
+	cout << "Please enter end date: ";
+	getline(cin, secondDate);
+
+	if (!checkValidDate(firstDate) || !checkValidDate(secondDate)) return;
+
+	int first[3];
+	for (int i = 0; i < 3; i++) first[i] = splitDate(firstDate, "/")[i];
+
+	int second[3];
+	for (int i = 0; i < 3; i++) second[i] = splitDate(secondDate, "/")[i];
+
+	Date from_date = { first[2],first[1],first[0] };
+	Date to_date = { second[2],second[1],second[0] };
+
+	ifstream file("activity.txt");
+
+	if (!file.is_open())
+	{
+		cout << "Error!" << endl;
+		return;
+	}
+	bool match = false;
+
+
+	while (!file.eof())
+	{
+		string buff;
+		while (getline(file, buff)) {
+
+			if (buff.size() < 2) break;
+
+			string space_delimiter = " ";
+			string foundDate;
+			for (int i = 0; i < buff.size(); i++) {
+				if (buff[i] == ' ') {
+					foundDate = buff.substr(0, i);
+					break;
+				}
+			}
+			int date[3];
+			for (int i = 0; i < 3; i++) date[i] = splitDate(foundDate, "/")[i];
+			Date found = { date[2],date[1],date[0] };
+
+			if (found.isBetween(from_date, to_date)) {
+				match = true;
+				cout << buff << endl;
+			}
+		}
+	}
+	if (!match) cout << "No activites in this range." << endl;
+
+}
+
 void StorageCollection::clearProductsByDate(string s) {
-	
+
+	if (!checkValidDate(s)) return;
+
+
 	int exp_date[3];
 	for (int i = 0; i < 3; i++) exp_date[i] = splitDate(s, "/")[i];
 
@@ -300,17 +418,29 @@ void StorageCollection::clearProductsByDate(string s) {
 	
 	bool cleared = false;
 
+
 	for (int i = 0; i < current; i++) {
 		if (products[i]->get_expiry_date().isExpiringSoon(input_date)) {
-			cout <<"-> "<< products[i]->get_name() << " on section: " << products[i]->get_section() << " line: " << products[i]->get_line() << "expires soon, so it is removed" << endl;
-			products[i] = nullptr;
+			cout <<"-> "<< products[i]->get_name() << " on section:" << products[i]->get_section() << " line: " << products[i]->get_line() << " expires soon, so it is removed" << endl;
 			cleared = true;
 			removeFromFile(i);
+			writeActivityOnFile(5);
 		}
+		delete products[i];
 	}
+	if (cleared) {
+		current = 0;
+		count = 1;
+		currentLine = 1;
+		currentSection = 1;
+
+		readFromFile();
+	}
+	
+
+
 	if (!cleared) cout << "-> There is nothing to clear." << endl;
 }
-
 
 StorageCollection::~StorageCollection() {
 	clear();

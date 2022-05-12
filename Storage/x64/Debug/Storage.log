@@ -2,7 +2,8 @@
 C:\Storage\Storage\StorageCollection.cpp(30,23): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\Storage\Storage\StorageCollection.cpp(35,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\Storage\Storage\StorageCollection.cpp(36,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Storage\Storage\StorageCollection.cpp(62): warning C4715: 'StorageCollection::writeOnFile': not all control paths return a value
+C:\Storage\Storage\StorageCollection.cpp(62): warning C4715: 'StorageCollection::writeActivityOnFile': not all control paths return a value
 C:\Storage\Storage\StorageCollection.cpp(39): warning C4172: returning address of local variable or temporary: dates
-C:\Storage\Storage\StorageCollection.cpp(108): warning C4715: 'StorageCollection::readFromFile': not all control paths return a value
+C:\Storage\Storage\StorageCollection.cpp(80): warning C4715: 'StorageCollection::writeOnFile': not all control paths return a value
+C:\Storage\Storage\StorageCollection.cpp(129): warning C4715: 'StorageCollection::readFromFile': not all control paths return a value
   Storage.vcxproj -> C:\Storage\x64\Debug\Storage.exe

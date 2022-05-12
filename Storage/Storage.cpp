@@ -11,6 +11,7 @@ int main()
 
     char input[1024];
     string str;
+    bool stop = false;
 
     while (cin >> input) {
         switch (input[0]) {
@@ -20,6 +21,8 @@ int main()
             break;
         case '2':
             s.showProducts(); break;
+        case '4':
+            s.showActivity(); break;
         case '5':
             cout << "-> Please enter date: ";
             cin.ignore();
@@ -29,8 +32,11 @@ int main()
 
         default:
             cout << "-> Not valid function.Try again." << endl;
+            stop = true;
+            break;
         }
+        if (stop) break;
     }
-  
+
     
 }
