@@ -21,6 +21,8 @@ int main()
             break;
         case '2':
             s.showProducts(); break;
+        case '3':
+            s.exportProduct(); break;
         case '4':
             s.showActivity(); break;
         case '5':
@@ -40,3 +42,4 @@ int main()
 
     
 }
+

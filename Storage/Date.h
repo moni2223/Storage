@@ -33,5 +33,9 @@ public:
         os << dt.day << '/' << dt.month << '/' << dt.year;
         return os;
     }
+    bool operator>=(const Date& other) const;
     
 };
+
+
+

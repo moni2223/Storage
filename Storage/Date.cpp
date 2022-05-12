@@ -63,3 +63,16 @@ bool Date::isBetween(const Date& first, const Date& second) {
     }
     else return false;
 }
+
+bool Date::operator>=(const Date& other) const {
+    if (year > other.year) return true;
+    else if (year == other.year) {
+        if (month > other.month) return true;
+        else if (month == other.month) {
+            if (day >= other.day) return true;
+            else return false;
+        }
+        else return false;
+    }
+    else return false;
+}

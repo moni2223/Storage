@@ -26,8 +26,9 @@ public:
 	void showProducts();
 	void clearProductsByDate(string s);
 	void showActivity();
+	void exportProduct();
 
-	int writeOnFile();
+	int writeOnFile(int id);
 	int readFromFile();
 	int removeFromFile(int line);
 	int clearFile();

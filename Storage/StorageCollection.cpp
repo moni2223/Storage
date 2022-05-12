@@ -51,8 +51,11 @@ int StorageCollection::writeActivityOnFile(int functionID) {
 	case 1: file << products[current - 1]->get_import_date() << " --> Product with name: " << products[current - 1]->get_name()
 		<< " added on section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
 		break;
+	case 3: file << products[current - 1]->get_expiry_date() << " --> Product with name: " << products[current - 1]->get_name()
+		<< "exported from section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
+		break;
 	case 5: file << products[current - 1]->get_expiry_date() << " --> Product with name: " << products[current - 1]->get_name()
-		<< "removed from section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
+		<< "is expiring soon so it is removed from section: " << products[current - 1]->get_section() << " line: " << products[current - 1]->get_line() << endl;
 		break;
 	default: break;
 	}
@@ -61,7 +64,7 @@ int StorageCollection::writeActivityOnFile(int functionID) {
 	file.close();
 }
 
-int StorageCollection::writeOnFile() {
+int StorageCollection::writeOnFile(int id) {
 
 	ofstream file("output.txt", ios::app);
 
@@ -71,7 +74,10 @@ int StorageCollection::writeOnFile() {
 		return -1;
 	}
 
-	file << "{ " << products[current - 1]->get_name() << " " << products[current - 1]->get_expiry_date() << " " << products[current - 1]->get_import_date() << " " << products[current - 1]->get_manufacturer() << " " << products[current - 1]->get_quantity() << " " << products[current - 1]->get_section() << " " << products[current - 1]->get_line() << " }" << "\n";
+	file << "{ " << products[id]->get_name() << " " << products[id]->get_expiry_date() << " " 
+		<< products[id]->get_import_date() << " " << products[id]->get_manufacturer() << " " 
+		<< products[id]->get_quantity() << " " << products[id]->get_section()
+		<< " " << products[id]->get_line() << " }" << "\n";
 
 	if (!file.eof())
 		
@@ -322,7 +328,7 @@ void StorageCollection::addProduct(const char* name, Date expiry_date, Date impo
 
 		if (add) {
 			cout << "-> Product added successfully" << endl;
-			writeOnFile();
+			writeOnFile(current - 1);
 		}
 	}
 	writeActivityOnFile(1);
@@ -344,6 +350,116 @@ void StorageCollection::showProducts() {
 			cout << endl;
 		}
 	}
+}
+
+void StorageCollection::exportProduct() {
+	string name_input;
+	int quantity = 0;
+
+	cin.ignore();
+	cout << "Please enter name: ";
+	getline(cin, name_input);
+	cout << "Please enter how much you want to export: ";
+	cin >> quantity;
+
+	if (quantity == 0) {
+		cout << "Invalid quantity" << endl;
+		return;
+	} 
+
+	const char* name = name_input.c_str();
+	
+	for (int i = 0; i < current; i++) {
+		for (int j = i + 1; j < current; j++) {
+			if (strcmp(products[j]->get_name(), products[i]->get_name()) == 0) {
+
+				if (products[j]->get_expiry_date() >= products[i]->get_expiry_date()) {
+
+					if (strcmp(products[i]->get_name(), name) == 0) {
+						if (products[i]->get_quantity() >= quantity) {
+							products[i]->set_quantity(products[i]->get_quantity() - quantity);
+							cout << "Exported " << quantity << " packages of " << name 
+								<< "from section-line: " << products[i]->get_section() << "-" << products[i]->get_line() << endl;
+							removeFromFile(i);
+							writeOnFile(i);
+							return;
+						}
+						else {
+							if (products[j]->get_quantity() - quantity < 0) {
+								cout << "Insufficient quantity" << endl;
+								return;
+							}
+							else {
+								quantity -= products[i]->get_quantity();
+								products[i]->set_quantity(0);
+								cout << "Exported " << quantity << " packages of " << name
+									<< " from section-line: " << products[i]->get_section() << "-" << products[i]->get_line() << endl;
+								removeFromFile(i);
+								writeOnFile(i);
+								products[j]->set_quantity(products[j]->get_quantity() - quantity);
+								cout << "and " << quantity << " packages of " << name
+									<< " from section-line: " << products[j]->get_section() << "-" << products[j]->get_line() << endl;
+								removeFromFile(j);
+								writeOnFile(j);
+								return;
+
+							}
+						}
+					}
+				}
+				else {
+					if (strcmp(products[j]->get_name(), name) == 0) {
+						if (products[j]->get_quantity() >= quantity) {
+							products[j]->set_quantity(products[j]->get_quantity() - quantity);
+							cout << "Exported " << quantity << " packages of " << name
+								<< " from section-line: " << products[j]->get_section() << "-" << products[j]->get_line() << endl;
+							removeFromFile(j);
+							writeOnFile(j);
+							return;
+						}
+						else {
+							if (products[i]->get_quantity() - quantity < 0) {
+								cout << "Insufficient quantity" << endl;
+								return;
+							}
+							else {
+								quantity -= products[j]->get_quantity();
+								products[j]->set_quantity(0);
+								cout << "Exported " << quantity << " packages of " << name
+									<< " from section-line: " << products[j]->get_section() << "-" << products[j]->get_line() << endl;
+								removeFromFile(j);
+								writeOnFile(j);
+								products[i]->set_quantity(products[i]->get_quantity() - quantity);
+								cout<<"and " << quantity << " packages of " << name
+									<< " from section-line: " << products[i]->get_section() << "-" << products[i]->get_line() << endl;
+								removeFromFile(i);
+								writeOnFile(i);
+								return;
+
+							}
+
+						}
+					}
+				}
+			}
+			else if (strcmp(products[i]->get_name(), name) == 0) {
+				if (products[i]->get_quantity() >= quantity) {
+					products[i]->set_quantity(products[i]->get_quantity() - quantity);
+					cout << "Exported " << quantity << " packages of " << name
+						<< " from section-line: " << products[i]->get_section() << "-" << products[i]->get_line() << endl;
+					removeFromFile(i);
+					writeOnFile(i);
+					return;
+				}
+				else {
+					cout << "Insufficient quantity." << endl;
+					return;
+				}
+			}
+			
+		}
+		
+	}//bubble
 }
 
 void StorageCollection::showActivity() {
